@@ -45,7 +45,9 @@ def handle_collect_weather(station_id):
             )
             db.session.commit()
 
-        return jsonify(message="success")
+            return jsonify(message="success")
+
+        return jsonify(message="Invalid station_id"), 400
 
 
 @app.route('/forecast/collect/<int:station_id>', methods=['POST'])
@@ -71,5 +73,7 @@ def handle_collect_forecast(station_id):
                 )
             db.session.commit()
 
-        return jsonify(message="success")
+            return jsonify(message="success")
+
+        return jsonify(message="Invalid station_id"), 400
     
