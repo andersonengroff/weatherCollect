@@ -17,7 +17,7 @@ app = create_app()
 db = SQLAlchemy(app)
 
 # get Model
-from project.model import Collector
+from project.model import Collector, time_transform
 
 @app.route("/")
 def hello_world():
@@ -44,6 +44,8 @@ def handle_collect_weather(station_id):
                 )
             )
             db.session.commit()
+            
+            time_transform()
 
             return jsonify(message="success")
 

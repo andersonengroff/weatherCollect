@@ -16,6 +16,22 @@ def create_db():
 @cli.command("seed_db")
 def seed_db():
     db.engine.execute(
+        """
+           CREATE SEQUENCE time_sequence
+            start 1
+            increment 1
+        """
+    )
+
+    db.engine.execute(
+        """
+           CREATE SEQUENCE fact_sequence
+            start 1
+            increment 1
+        """
+    )
+
+    db.engine.execute(
         """CREATE TABLE TMP_SEED (
             id serial NOT NULL,
             station varchar(20) NOT NULL,
@@ -50,7 +66,7 @@ def seed_db():
 
     db.engine.execute(
         """INSERT into "TIME"  
-                select row_number() over (order by year, month) as row_number,
+                select nextval('time_sequence') as id,
                     year,
                     month
                 from (select year, month
@@ -62,7 +78,7 @@ def seed_db():
 
     db.engine.execute(
         """INSERT into "FACT" 
-                select row_number() over (order by ts.year, ts.month) as row_number,
+                select nextval('fact_sequence') as id,
                     s.id,
                     t.id,
                     ts.rain,
