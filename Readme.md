@@ -7,7 +7,7 @@ Simple Docker + Python + Flask + Postgres API
 A [docker](https://www.docker.com/products/docker-desktop) installed 
 
 ## Installation
-Unzip sparknet.zip file
+Unzip sparknet.zip file or git clone https://github.com/andersonengroff/weatherCollect.git
 
 
 run
