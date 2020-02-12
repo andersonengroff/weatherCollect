@@ -149,8 +149,10 @@ def time_transform():
 
 
 def fact_transform():
-    sql = """with 
+    sql = """
+                with 
                     collect_daily_not_repetead_data as (select cast(id_station as varchar) as code,
+                                                    cast(date_trunc('day', datetime) as date) as datetime,
                                                     extract(year from datetime) as year,
                                                     extract(month from datetime) as month,
                                                     extract(day from datetime) as day,
@@ -168,7 +170,7 @@ def fact_transform():
                                                     max(rain) as rain,
                                                     max(max_temperature) as max_temperature
                                                 from "COLLECTOR" c 
-                                                group by 1, 2, 3, 4, 5, 6
+                                                group by 1, 2, 3, 4, 5, 6, 7
                                             ),
                                             
                 month_transformation as (
@@ -188,7 +190,8 @@ def fact_transform():
                             day,
                             sum(rain) as total_rainfall,
                             avg(max_temperature) as mean_max_temperature
-                        from collect_daily_not_repetead_data  
+                        from collect_daily_not_repetead_data
+                        where current_date-datetime <= 30
                         group by 1,2,3,4
                 ),
                 
@@ -201,8 +204,10 @@ def fact_transform():
                             sum(rain) as total_rainfall,
                             avg(max_temperature) as mean_max_temperature
                         from collect_daily_not_repetead_data  
+                        where current_date-datetime <= 7
                         group by 1,2,3,4,5
                 ),
+                
                 
                 data_fact_month as (
                                     select nextval('fact_sequence') as id,
@@ -250,3 +255,15 @@ def fact_transform():
     db.session.execute(sql)
     db.session.commit()
 
+def fact_clean():
+    sql = """
+            delete from "FACT" 
+            where id_time in (  select id
+                                from "TIME" 
+                                where (year = 2020 and month >= 2)
+                                    or  year > 2020
+                            )
+    """
+
+    db.session.execute(sql)
+    db.session.commit()

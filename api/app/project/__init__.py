@@ -17,7 +17,7 @@ app = create_app()
 db = SQLAlchemy(app)
 
 # get Model
-from project.model import Collector, time_transform
+from project.model import Collector, time_transform, fact_transform, fact_clean
 
 @app.route("/")
 def hello_world():
@@ -45,8 +45,6 @@ def handle_collect_weather(station_id):
             )
             db.session.commit()
             
-            time_transform()
-
             return jsonify(message="success")
 
         return jsonify(message="Invalid station_id"), 400
@@ -78,4 +76,17 @@ def handle_collect_forecast(station_id):
             return jsonify(message="success")
 
         return jsonify(message="Invalid station_id"), 400
+    
+@app.route('/transformation/fact', methods=['POST'])
+def handle_transformation_fact():
+    if request.method == 'POST':
+        try:
+            fact_clean()
+            time_transform()
+            fact_transform()
+        except:
+            return jsonify(message="Transformation Failed"), 500
+
+
+    return jsonify(message="success")
     
